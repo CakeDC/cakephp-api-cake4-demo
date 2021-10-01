@@ -36,19 +36,19 @@ class Plugin extends BasePlugin
      * @param \Cake\Routing\RouteBuilder $routes The route builder to update.
      * @return void
      */
-    // public function routes(RouteBuilder $routes): void
-    // {
-        // $routes->plugin(
-            // 'External',
-            // ['path' => '/external'],
-            // function (RouteBuilder $builder) {
-                //// Add custom routes here
+    public function routes(RouteBuilder $routes): void
+    {
+        $routes->plugin(
+            'External',
+            ['path' => '/external'],
+            function (RouteBuilder $builder) {
+                // Add custom routes here
 
-                // $builder->fallbacks();
-            // }
-        // );
-        // parent::routes($routes);
-    // }
+                $builder->fallbacks();
+            }
+        );
+        parent::routes($routes);
+    }
 
     /**
      * Add middleware for the plugin.
@@ -63,29 +63,5 @@ class Plugin extends BasePlugin
         return $middlewareQueue;
     }
 
-    public function routes($routes): void
-    {
-        $middlewares = Configure::read('Api.Middleware');
-        foreach ($middlewares as $alias => $middleware) {
-            $class = $middleware['class'];
-            if (array_key_exists('request', $middleware)) {
-                $requestClass = $middleware['request'];
-                $request = new $requestClass();
-                if (array_key_exists('method', $middleware)) {
-                    $request = $request->{$middleware['method']}();
-                }
-                if (array_key_exists('params', $middleware)) {
-                    $options = $middleware['params'];
-                    $routes->registerMiddleware($alias, new $class($request, $options));
-                } else {
-                    $routes->registerMiddleware($alias, new $class($request));
-                }
-            } else {
-                $routes->registerMiddleware($alias, new $class());
-            }
-        }
-
-        parent::routes($routes);
-    }
 
 }
